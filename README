@@ -45,3 +45,14 @@ You will need a RISC-V "newlib" tool chain from
 https://github.com/riscv/riscv-gnu-toolchain, and qemu compiled for
 riscv64-softmmu.  Once they are installed, and in your shell
 search path, you can run "make qemu".
+
+
+xv6的主要目标是简单明了，同时提供一个简单的类unix系统调用接口
+
+# 启动
+
+make qemu
+
+# 测试
+./grade-lab-util sleep
+./grade-lab-util primes

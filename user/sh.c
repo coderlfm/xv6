@@ -158,6 +158,8 @@ main(void)
 
   // Read and run input commands.
   while(getcmd(buf, sizeof(buf)) >= 0){
+    // 运行cd
+    // cd必须更改shell本身的当前工作目录。如果cd作为常规命令运行，那么shell将分出一个子进程，子进程将运行cd，cd将更改子进程的工作目录。父目录(即shell的)的工作目录不会改变。
     if(buf[0] == 'c' && buf[1] == 'd' && buf[2] == ' '){
       // Chdir must be called by the parent, not the child.
       buf[strlen(buf)-1] = 0;  // chop \n
@@ -165,6 +167,7 @@ main(void)
         fprintf(2, "cannot cd %s\n", buf+3);
       continue;
     }
+    // 它会创建一个子进程并返回子进程的进程 ID。如果返回值为 0，说明当前进程是子进程，那么就会调用 runcmd() 函数来执行用户输入的命令
     if(fork1() == 0)
       runcmd(parsecmd(buf));
     wait(0);
