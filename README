@@ -55,6 +55,7 @@ make qemu
 
 # 调试、
 窗口1
+make CPUS=1 qemu
 make CPUS=1 qemu-gdb      
 
 窗口2
