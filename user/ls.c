@@ -9,7 +9,7 @@ fmtname(char *path)
   static char buf[DIRSIZ+1];
   char *p;
 
-  // Find first character after last slash.
+  // 查找最后一个斜杠后的第一个字符。
   for(p=path+strlen(path); p >= path && *p != '/'; p--)
     ;
   p++;
@@ -17,7 +17,7 @@ fmtname(char *path)
   // Return blank-padded name.
   if(strlen(p) >= DIRSIZ)
     return p;
-  memmove(buf, p, strlen(p));
+  memmove(buf, p, strlen(p));   // 下面两行主要是为了格式化输出，将文件名后面的空间填充空格
   memset(buf+strlen(p), ' ', DIRSIZ-strlen(p));
   return buf;
 }
@@ -53,12 +53,12 @@ ls(char *path)
       break;
     }
     strcpy(buf, path);
-    p = buf+strlen(buf);
+    p = buf+strlen(buf); // p现在指向buf的最后一个地址
     *p++ = '/';
     while(read(fd, &de, sizeof(de)) == sizeof(de)){
       if(de.inum == 0)
         continue;
-      memmove(p, de.name, DIRSIZ);
+      memmove(p, de.name, DIRSIZ); // 这里每次都是从buf的/后面开始写入，所以buf中/后main的内容会被覆盖，因为memove内部每次都会把p向后移动DIRSIZ个位置，所以每次都是从buf的头部开始写入
       p[DIRSIZ] = 0;
       if(stat(buf, &st) < 0){
         printf("ls: cannot stat %s\n", buf);

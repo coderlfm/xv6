@@ -53,6 +53,14 @@ xv6的主要目标是简单明了，同时提供一个简单的类unix系统调�
 
 make qemu
 
+# 调试、
+窗口1
+make CPUS=1 qemu-gdb      
+
+窗口2
+riscv64-unknown-elf-gdb kernel/kernel    
+
 # 测试
 ./grade-lab-util sleep
 ./grade-lab-util primes
+./grade-lab-util find
