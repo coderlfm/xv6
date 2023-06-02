@@ -45,7 +45,7 @@
 // for use by the kernel and user pages
 // from physical address 0x80000000 to PHYSTOP.
 #define KERNBASE 0x80000000L
-#define PHYSTOP (KERNBASE + 128*1024*1024)
+#define PHYSTOP (KERNBASE + 128*1024*1024) // qemu仿真的内存，起始地址是0x80000000L 结束地址是PHYSTOP 0x88000000L，用结束地址减去起始地址，可以发现内存是128M, 从PHYSTOP的定义中可以看出是128
 
 // map the trampoline page to the highest address,
 // in both user and kernel space.

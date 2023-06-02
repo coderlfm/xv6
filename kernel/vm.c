@@ -89,14 +89,14 @@ walk(pagetable_t pagetable, uint64 va, int alloc)
     panic("walk");
 
   for(int level = 2; level > 0; level--) {
-    pte_t *pte = &pagetable[PX(level, va)];
-    if(*pte & PTE_V) {
-      pagetable = (pagetable_t)PTE2PA(*pte);
+    pte_t *pte = &pagetable[PX(level, va)]; // ((10324200000000) >> (12+(9*2))) & 0x1FF (111111111)
+    if(*pte & PTE_V) {  // 判断是否有效
+      pagetable = (pagetable_t)PTE2PA(*pte);  // 取到真实物理地址，舍去右边10位标记位，留下高44位
     } else {
-      if(!alloc || (pagetable = (pde_t*)kalloc()) == 0)
+      if(!alloc || (pagetable = (pde_t*)kalloc()) == 0) // 对应的PTE不存在，且alloc被置位，则为该PTE指向的下一层表分配一页
         return 0;
-      memset(pagetable, 0, PGSIZE);
-      *pte = PA2PTE(pagetable) | PTE_V;
+      memset(pagetable, 0, PGSIZE);  // 将这个页表初始化置0
+      *pte = PA2PTE(pagetable) | PTE_V; // 将56位地址右移12位，去掉偏移位，再左移10位，得到标记为，同时将PTE_V置1
     }
   }
   return &pagetable[PX(0, va)];
@@ -149,17 +149,17 @@ mappages(pagetable_t pagetable, uint64 va, uint64 size, uint64 pa, int perm)
     panic("mappages: size");
   
   a = PGROUNDDOWN(va);
-  last = PGROUNDDOWN(va + size - 1);
+  last = PGROUNDDOWN(va + size - 1);  // 分别向上取4096的倍数和向下取4096的倍数
   for(;;){
-    if((pte = walk(pagetable, a, 1)) == 0)
+    if((pte = walk(pagetable, a, 1)) == 0) // 给这个地址分配PTE失败
       return -1;
-    if(*pte & PTE_V)
+    if(*pte & PTE_V)  // 这个PTE已经被使用了，有效位有效
       panic("mappages: remap");
-    *pte = PA2PTE(pa) | perm | PTE_V;
-    if(a == last)
+    *pte = PA2PTE(pa) | perm | PTE_V;  // 取出物理地址的PPN(页帧)，加上标记位信息perm和有效位
+    if(a == last) // 如果分配到了足够的页数，则返回
       break;
     a += PGSIZE;
-    pa += PGSIZE;
+    pa += PGSIZE; // 分配到了一页，虚拟地址的起始位置和物理地址起始地址都加一页
   }
   return 0;
 }

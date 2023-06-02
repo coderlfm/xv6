@@ -34,7 +34,7 @@ trapinithart(void)
 // called from trampoline.S
 //
 void
-usertrap(void)
+usertrap(void) // 系统调用，陷入内核
 {
   int which_dev = 0;
 
@@ -42,12 +42,12 @@ usertrap(void)
     panic("usertrap: not from user mode");
 
   // send interrupts and exceptions to kerneltrap(),
-  // since we're now in the kernel.
+  // since we're now in the kernel. 将中断和异常发送给kerneltrap()，因为我们现在在内核中。
   w_stvec((uint64)kernelvec);
 
   struct proc *p = myproc();
   
-  // save user program counter.
+  // save user program counter.  保存用户pc指针
   p->trapframe->epc = r_sepc();
   
   if(r_scause() == 8){
@@ -80,7 +80,7 @@ usertrap(void)
   if(which_dev == 2)
     yield();
 
-  usertrapret();
+  usertrapret();  // 返回到用户空间
 }
 
 //

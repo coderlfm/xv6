@@ -335,8 +335,8 @@ typedef uint64 *pagetable_t; // 512 PTEs
 #define PGSIZE 4096 // bytes per page
 #define PGSHIFT 12  // bits of offset within a page
 
-#define PGROUNDUP(sz)  (((sz)+PGSIZE-1) & ~(PGSIZE-1))
-#define PGROUNDDOWN(a) (((a)) & ~(PGSIZE-1))
+#define PGROUNDUP(sz)  (((sz)+PGSIZE-1) & ~(PGSIZE-1))  // 如sz：1000,  5095 & 0xFFFFF000 向上取4096的倍数
+#define PGROUNDDOWN(a) (((a)) & ~(PGSIZE-1)) // 向下取4096的倍数
 
 #define PTE_V (1L << 0) // valid
 #define PTE_R (1L << 1)
@@ -351,7 +351,7 @@ typedef uint64 *pagetable_t; // 512 PTEs
 
 #define PTE_FLAGS(pte) ((pte) & 0x3FF)
 
-// extract the three 9-bit page table indices from a virtual address.
+// extract the three 9-bit page table indices from a virtual address.  从一个虚拟地址提取三个9位页表索引。
 #define PXMASK          0x1FF // 9 bits
 #define PXSHIFT(level)  (PGSHIFT+(9*(level)))
 #define PX(level, va) ((((uint64) (va)) >> PXSHIFT(level)) & PXMASK)

@@ -1,0 +1,19 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-DSOL_UTIL",
+      "-DLAB_UTIL",
+      "-Werror",
+      "-Wall",
+      "-I.",
+      "-o",
+      "mkfs/mkfs",
+      "mkfs/mkfs.c"
+    ],
+    "directory": "/Users/liufengmao/Desktop/learn/xv6-labs-2022",
+    "file": "/Users/liufengmao/Desktop/learn/xv6-labs-2022/mkfs/mkfs.c",
+    "output": "/Users/liufengmao/Desktop/learn/xv6-labs-2022/mkfs/mkfs"
+  }
+]
