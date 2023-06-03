@@ -91,3 +91,15 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+uint64
+sys_trace(void) {
+
+  int mask;
+  argint(0, &mask);
+
+  struct proc *p = myproc();
+  p->tracemask = mask; // 记录需要跟踪的调用号
+
+  return 0;
+}

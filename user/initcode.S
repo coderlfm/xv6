@@ -26,3 +26,9 @@ init:
 argv:
   .long init
   .long 0
+
+/**
+用户代码将exec需要的参数放在寄存器a0和a1中，并将系统调用号放在a7中。
+系统调用号与syscalls数组中的条目相匹配，syscalls数组是一个函数指针表（kernel/syscall.c:108）。
+ecall指令陷入(trap)到内核中，执行uservec、usertrap和syscall，和我们之前看到的一样。
+ */

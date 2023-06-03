@@ -34,7 +34,7 @@ trapinithart(void)
 // called from trampoline.S
 //
 void
-usertrap(void) // 系统调用，陷入内核
+usertrap(void) // 系统调用，陷入内核(陷入的原因有多种，不同的原因对应不同的处理)
 {
   int which_dev = 0;
 
@@ -50,14 +50,14 @@ usertrap(void) // 系统调用，陷入内核
   // save user program counter.  保存用户pc指针
   p->trapframe->epc = r_sepc();
   
-  if(r_scause() == 8){
+  if(r_scause() == 8){ // 陷入原因：系统调用
     // system call
 
     if(killed(p))
       exit(-1);
 
     // sepc points to the ecall instruction,
-    // but we want to return to the next instruction.
+    // but we want to return to the next instruction.   spec会指向ecall指令，但是当陷入返回后我们需要执行ecall的下一条指令，因此需要将其指针+4，120行会使用它
     p->trapframe->epc += 4;
 
     // an interrupt will change sepc, scause, and sstatus,
@@ -65,18 +65,18 @@ usertrap(void) // 系统调用，陷入内核
     intr_on();
 
     syscall();
-  } else if((which_dev = devintr()) != 0){
+  } else if((which_dev = devintr()) != 0){ // 陷入原因：设备中断
     // ok
-  } else {
+  } else { // 异常陷入内核，将进程杀死
     printf("usertrap(): unexpected scause %p pid=%d\n", r_scause(), p->pid);
     printf("            sepc=%p stval=%p\n", r_sepc(), r_stval());
     setkilled(p);
   }
 
-  if(killed(p))
+  if(killed(p))  // 判断进程是否被杀死
     exit(-1);
 
-  // give up the CPU if this is a timer interrupt.
+  // give up the CPU if this is a timer interrupt.  如果这种一个计时器中断，则将CPU让出
   if(which_dev == 2)
     yield();
 
@@ -85,7 +85,7 @@ usertrap(void) // 系统调用，陷入内核
 
 //
 // return to user space
-//
+// 回到用户空间
 void
 usertrapret(void)
 {
@@ -116,7 +116,7 @@ usertrapret(void)
   x |= SSTATUS_SPIE; // enable interrupts in user mode
   w_sstatus(x);
 
-  // set S Exception Program Counter to the saved user pc.
+  // set S Exception Program Counter to the saved user pc. 第61行保存的
   w_sepc(p->trapframe->epc);
 
   // tell trampoline.S the user page table to switch to.

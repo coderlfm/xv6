@@ -1,0 +1,11 @@
+{
+  "files.associations": {
+    "*.extension": "language",
+    "*.cjson": "jsonc",
+    "*.wxss": "css",
+    "*.wxs": "javascript",
+    "*.liquid": "liquid",
+    "types.h": "c",
+    "__locale": "c"
+  }
+}
