@@ -347,7 +347,7 @@ uvmclear(pagetable_t pagetable, uint64 va)
 
 // Copy from kernel to user.
 // Copy len bytes from src to virtual address dstva in a given page table.
-// Return 0 on success, -1 on error.
+// Return 0 on success, -1 on error.  将内核中的数据复制到用户空间中。具体来说，它会从源地址src开始，将长度为len的数据复制到虚拟地址dstva所在的页面中。如果复制成功，函数会返回0，否则返回-1。pagetable的作用是将虚拟地址转出物理地址，复制的时候需要用到
 int
 copyout(pagetable_t pagetable, uint64 dstva, char *src, uint64 len)
 {
@@ -361,7 +361,9 @@ copyout(pagetable_t pagetable, uint64 dstva, char *src, uint64 len)
     n = PGSIZE - (dstva - va0);
     if(n > len)
       n = len;
-    memmove((void *)(pa0 + (dstva - va0)), src, n);
+    memmove((void *)(pa0 + (dstva - va0)), src, n);  // 这里的pa0是虚拟地址va0所对应的物理地址，而(dstva - va0)表示目标地址dstva相对于虚拟地址va0的偏移量。因此，pa0 + (dstva - va0)就是目标地址在物理地址空间中的位置。这样做是为了将源地址src中的数据复制到目标地址所在的物理页面中。
+
+
 
     len -= n;
     src += n;

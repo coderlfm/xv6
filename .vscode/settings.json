@@ -6,6 +6,9 @@
     "*.wxs": "javascript",
     "*.liquid": "liquid",
     "types.h": "c",
-    "__locale": "c"
-  }
+    "__locale": "c",
+    "sysinfo.h": "c"
+  },
+  "commentTranslate.source": "Google",
+  "commentTranslate.multiLineMerge": false
 }

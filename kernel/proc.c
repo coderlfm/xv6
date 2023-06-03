@@ -684,3 +684,20 @@ procdump(void)
     printf("\n");
   }
 }
+
+// 获取进程数
+uint64 
+get_proc_count()
+{
+  struct proc *p;
+  int count = 0;
+  
+  for(p=proc; p < &proc[NPROC]; p++){
+    acquire(&p->lock);
+    if(p->state != UNUSED) {
+      count++;
+    }
+    release(&p->lock);
+  }
+  return count;
+}

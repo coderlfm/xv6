@@ -5,6 +5,14 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "sysinfo.h"
+
+
+uint64
+get_free_mem();
+
+uint64 
+get_proc_count();
 
 uint64
 sys_exit(void)
@@ -100,6 +108,26 @@ sys_trace(void) {
 
   struct proc *p = myproc();
   p->tracemask = mask; // 记录需要跟踪的调用号
+
+  return 0;
+}
+
+
+uint64 
+sys_sysinfo(void) {
+
+  struct proc *p = myproc();
+  struct sysinfo info;
+  uint64 addr;
+  
+  argaddr(0, &addr);       // 取到用户空间传入的 sysinof 指针
+
+  info.freemem = get_free_mem(); // 获取空闲内存大小
+  info.nproc = get_proc_count(); // 获取进程数
+
+  // 将 sysinfo 复制到用户空间
+  if(copyout(p->pagetable, addr, (char *)&info, sizeof(info)) < 0)
+    return -1;
 
   return 0;
 }

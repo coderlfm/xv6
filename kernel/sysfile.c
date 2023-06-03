@@ -113,8 +113,8 @@ sys_fstat(void)
   struct file *f;
   uint64 st; // user pointer to struct stat
 
-  argaddr(1, &st);
-  if(argfd(0, 0, &f) < 0)
+  argaddr(1, &st);       // 取到用户空间传入的第二个参数 st
+  if(argfd(0, 0, &f) < 0)  // 取到用户传入的第一个参数，文件描述符
     return -1;
   return filestat(f, st);
 }
