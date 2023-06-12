@@ -254,7 +254,7 @@ userinit(void)
   release(&p->lock);
 }
 
-// Grow or shrink user memory by n bytes.
+// Grow or shrink user memory by n bytes. 它实现了sbrk的功能
 // Return 0 on success, -1 on failure.
 int
 growproc(int n)
@@ -263,14 +263,14 @@ growproc(int n)
   struct proc *p = myproc();
 
   sz = p->sz;
-  if(n > 0){
+  if(n > 0){  // 如果是正数，表示需要分配新的内存
     if((sz = uvmalloc(p->pagetable, sz, sz + n, PTE_W)) == 0) {
       return -1;
     }
-  } else if(n < 0){
+  } else if(n < 0){ // 如果是负数，表示需要删除一些内存
     sz = uvmdealloc(p->pagetable, sz, sz + n);
   }
-  p->sz = sz;
+  p->sz = sz;  // 赋值为新的大小
   return 0;
 }
 

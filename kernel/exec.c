@@ -33,20 +33,20 @@ exec(char *path, char **argv)
 
   begin_op();
 
-  if((ip = namei(path)) == 0){
+  if((ip = namei(path)) == 0){  // 打开
     end_op();
     return -1;
   }
   ilock(ip);
 
   // Check ELF header
-  if(readi(ip, 0, (uint64)&elf, 0, sizeof(elf)) != sizeof(elf))
+  if(readi(ip, 0, (uint64)&elf, 0, sizeof(elf)) != sizeof(elf))  // 检查文件头
     goto bad;
 
   if(elf.magic != ELF_MAGIC)
     goto bad;
 
-  if((pagetable = proc_pagetable(p)) == 0)
+  if((pagetable = proc_pagetable(p)) == 0)  // 给用户分配一个新的页表
     goto bad;
 
   // Load program into memory.
@@ -62,10 +62,10 @@ exec(char *path, char **argv)
     if(ph.vaddr % PGSIZE != 0)
       goto bad;
     uint64 sz1;
-    if((sz1 = uvmalloc(pagetable, sz, ph.vaddr + ph.memsz, flags2perm(ph.flags))) == 0)
+    if((sz1 = uvmalloc(pagetable, sz, ph.vaddr + ph.memsz, flags2perm(ph.flags))) == 0)  // 给每个段分配内存
       goto bad;
     sz = sz1;
-    if(loadseg(pagetable, ph.vaddr, ip, ph.off, ph.filesz) < 0)
+    if(loadseg(pagetable, ph.vaddr, ip, ph.off, ph.filesz) < 0)  
       goto bad;
   }
   iunlockput(ip);
@@ -88,7 +88,7 @@ exec(char *path, char **argv)
   stackbase = sp - PGSIZE;
 
   // Push argument strings, prepare rest of stack in ustack.
-  for(argc = 0; argv[argc]; argc++) {
+  for(argc = 0; argv[argc]; argc++) {   // 读取所有的参数，复制到栈顶
     if(argc >= MAXARG)
       goto bad;
     sp -= strlen(argv[argc]) + 1;
@@ -97,7 +97,7 @@ exec(char *path, char **argv)
       goto bad;
     if(copyout(pagetable, sp, argv[argc], strlen(argv[argc]) + 1) < 0)
       goto bad;
-    ustack[argc] = sp;
+    ustack[argc] = sp;  // 在ustack中记录所有参数的指针
   }
   ustack[argc] = 0;
 
@@ -120,14 +120,16 @@ exec(char *path, char **argv)
       last = s+1;
   safestrcpy(p->name, last, sizeof(p->name));
     
-  // Commit to the user image.
+  // Commit to the user image.   提交新的页表
   oldpagetable = p->pagetable;
   p->pagetable = pagetable;
   p->sz = sz;
   p->trapframe->epc = elf.entry;  // initial program counter = main
   p->trapframe->sp = sp; // initial stack pointer
-  proc_freepagetable(oldpagetable, oldsz);
+  proc_freepagetable(oldpagetable, oldsz);   // 释放旧的页表
 
+  if(p->pid == 1) vmprint(p->pagetable);
+  
   return argc; // this ends up in a0, the first argument to main(argc, argv)
 
  bad:

@@ -1,0 +1,12 @@
+{
+  "files.associations": {
+    "*.extension": "language",
+    "*.cjson": "jsonc",
+    "*.wxss": "css",
+    "*.wxs": "javascript",
+    "*.liquid": "liquid",
+    "elf.h": "c",
+    "riscv.h": "c",
+    "proc.h": "c"
+  }
+}
